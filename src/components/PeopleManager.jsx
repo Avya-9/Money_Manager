@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function PeopleManager({ persons, onRename, onMerge, onClose }) {
+export default function PeopleManager({ persons, onRename, onMerge, onDelete, onClose }) {
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState("");
   const [mergeFrom, setMergeFrom] = useState("");
@@ -49,14 +49,21 @@ export default function PeopleManager({ persons, onRename, onMerge, onClose }) {
                 <div className="person-name">{p.name}</div>
               )}
             </div>
-            <div>
+            <div style={{display: 'flex', gap: 8}}>
               {editing === p.id ? (
                 <>
                   <button onClick={saveEdit}>Save</button>
                   <button onClick={() => setEditing(null)}>Cancel</button>
                 </>
               ) : (
-                <button onClick={() => startEdit(p)}>Rename</button>
+                <>
+                  <button onClick={() => startEdit(p)}>Rename</button>
+                  <button onClick={() => {
+                    if (window.confirm(`Delete "${p.name}"? This will also delete all transactions for this person.`)) {
+                      onDelete(p.id);
+                    }
+                  }} style={{background: '#ef4444', color: '#fff'}}>Delete</button>
+                </>
               )}
             </div>
           </li>

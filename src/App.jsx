@@ -78,6 +78,13 @@ function App() {
     setPersons((prev) => prev.filter((p) => p.id !== sourceId));
   }
 
+  function deletePerson(id) {
+    if (!id) return;
+    // remove person and all their transactions
+    setPersons((prev) => prev.filter((p) => p.id !== id));
+    setTransactions((prev) => prev.filter((t) => t.personId !== id));
+  }
+
   function openPerson(personId) {
     // set filter so TransactionList shows only that person's transactions
     setTransactionFilterPersonId(personId);
@@ -178,6 +185,7 @@ function App() {
                 persons={persons}
                 onRename={renamePerson}
                 onMerge={mergePeople}
+                onDelete={deletePerson}
                 onClose={() => setShowPeopleManager(false)}
               />
             </div>
