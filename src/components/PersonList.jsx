@@ -22,7 +22,7 @@ export default function PersonList({ persons, transactions, personsMap, selected
           <li key={p.id} className="person-item">
             <div>
               <div className="person-name">{p.name}</div>
-              <div className={`person-balance ₹{p.balance >= 0 ? 'pos' : 'neg'}`}>
+              <div className={`person-balance ${p.balance >= 0 ? 'pos' : 'neg'}`}>
                 {p.balance >= 0 ? '+' : '-'}₹{Math.abs(p.balance).toFixed(2)}
               </div>
             </div>

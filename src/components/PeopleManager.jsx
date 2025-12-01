@@ -13,7 +13,7 @@ export default function PeopleManager({ persons, onRename, onMerge, onDelete, on
 
   function saveEdit() {
     if (editing && name.trim()) {
-      const ok = window.confirm(`Rename "₹{(persons.find(pp=>pp.id===editing)||{}).name || ''}" to "₹{name.trim()}"?`);
+      const ok = window.confirm(`Rename "${(persons.find(pp=>pp.id===editing)||{}).name || ''}" to "${name.trim()}"?`);
       if (ok) onRename(editing, name.trim());
     }
     setEditing(null);
@@ -24,7 +24,7 @@ export default function PeopleManager({ persons, onRename, onMerge, onDelete, on
     if (mergeFrom && mergeTo && mergeFrom !== mergeTo) {
       const fromName = (persons.find(p=>p.id===mergeFrom)||{}).name || mergeFrom;
       const toName = (persons.find(p=>p.id===mergeTo)||{}).name || mergeTo;
-      const ok = window.confirm(`Merge "₹{fromName}" into "₹{toName}"? This will move all transactions and remove "₹{fromName}".`);
+      const ok = window.confirm(`Merge "${fromName}" into "${toName}"? This will move all transactions and remove "${fromName}".`);
       if (ok) onMerge(mergeFrom, mergeTo);
     }
     setMergeFrom("");
@@ -59,7 +59,7 @@ export default function PeopleManager({ persons, onRename, onMerge, onDelete, on
                 <>
                   <button onClick={() => startEdit(p)}>Rename</button>
                   <button onClick={() => {
-                    if (window.confirm(`Delete "₹{p.name}"? This will also delete all transactions for this person.`)) {
+                    if (window.confirm(`Delete "${p.name}"? This will also delete all transactions for this person.`)) {
                       onDelete(p.id);
                     }
                   }} style={{background: '#ef4444', color: '#fff'}}>Delete</button>

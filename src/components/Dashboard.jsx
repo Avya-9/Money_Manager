@@ -14,8 +14,8 @@ function groupBy(transactions, granularity = "monthly", limit = 12) {
     const d = new Date(t.date);
     let key;
     if (granularity === "daily") key = d.toISOString().slice(0, 10);
-    else if (granularity === "weekly") key = `₹{d.getFullYear()}-W₹{getWeekNumber(d)}`;
-    else if (granularity === "monthly") key = `₹{d.getFullYear()}-₹{String(d.getMonth() + 1).padStart(2, "0")}`;
+    else if (granularity === "weekly") key = `${d.getFullYear()}-W${getWeekNumber(d)}`;
+    else if (granularity === "monthly") key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     else key = String(d.getFullYear());
 
     if (!map.has(key)) map.set(key, { income: 0, expense: 0, net: 0, key });
@@ -114,7 +114,7 @@ export default function Dashboard({ transactions, personsMap = {} }) {
                 <div key={p.id} className="person-card">
                   <div className="person-card-header">
                     <div className="person-name">{p.name}</div>
-                    <div className={`person-balance ₹{p.balance >= 0 ? 'pos' : 'neg'}`}>
+                    <div className={`person-balance ${p.balance >= 0 ? 'pos' : 'neg'}`}>
                       {p.balance >= 0 ? '+' : '-'}₹{Math.abs(p.balance).toFixed(2)}
                     </div>
                   </div>
