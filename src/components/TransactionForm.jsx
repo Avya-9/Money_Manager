@@ -12,6 +12,8 @@ export default function TransactionForm({ onAdd, persons = [] }) {
   const [type, setType] = useState("expense");
   const [person, setPerson] = useState("");
   const [error, setError] = useState("");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -39,14 +41,35 @@ export default function TransactionForm({ onAdd, persons = [] }) {
       date: new Date(date).toISOString(),
       type,
       person: person ? person.trim() : "",
+      image: image,
     };
     onAdd(tx);
     setTitle("");
     setAmount("");
+    setImage(null);
+    setImagePreview(null);
     // keep date/type/person to allow adding multiple items quickly
     // setDate(today);
     // setType("expense");
     // setPerson("");
+  }
+
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result;
+        setImage(base64);
+        setImagePreview(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function clearImage() {
+    setImage(null);
+    setImagePreview(null);
   }
 
   return (
@@ -92,6 +115,19 @@ export default function TransactionForm({ onAdd, persons = [] }) {
           </datalist>
         </div>
       )}
+
+      <div className="row">
+        <label>Picture (Optional)</label>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+        {imagePreview && (
+          <div style={{marginTop: '8px'}}>
+            <img src={imagePreview} alt="preview" style={{maxWidth: '100%', maxHeight: '150px', borderRadius: '8px'}} />
+            <button type="button" onClick={clearImage} style={{marginTop: '6px', padding: '4px 8px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px'}}>
+              Remove Image
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className="row actions">
         <button type="submit">Add</button>
