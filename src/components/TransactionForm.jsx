@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -14,6 +14,7 @@ export default function TransactionForm({ onAdd, persons = [] }) {
   const [error, setError] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -48,6 +49,9 @@ export default function TransactionForm({ onAdd, persons = [] }) {
     setAmount("");
     setImage(null);
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     // keep date/type/person to allow adding multiple items quickly
     // setDate(today);
     // setType("expense");
@@ -70,6 +74,9 @@ export default function TransactionForm({ onAdd, persons = [] }) {
   function clearImage() {
     setImage(null);
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
 
   return (
@@ -118,13 +125,15 @@ export default function TransactionForm({ onAdd, persons = [] }) {
 
       <div className="row">
         <label>Picture (Optional)</label>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} />
         {imagePreview && (
           <div style={{marginTop: '8px'}}>
             <img src={imagePreview} alt="preview" style={{maxWidth: '100%', maxHeight: '150px', borderRadius: '8px'}} />
-            <button type="button" onClick={clearImage} style={{marginTop: '6px', padding: '4px 8px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px'}}>
-              Remove Image
-            </button>
+            <div style={{marginTop: '8px', display: 'flex', gap: '8px'}}>
+              <button type="button" onClick={clearImage} style={{padding: '6px 12px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all .12s ease'}}>
+                Remove Image
+              </button>
+            </div>
           </div>
         )}
       </div>
