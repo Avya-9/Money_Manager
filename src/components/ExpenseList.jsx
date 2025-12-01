@@ -17,7 +17,7 @@ export default function ExpenseList({ items, onRemove }) {
             <div className="date">{formatDate(e.date)}</div>
           </div>
           <div className="right">
-            <div className="amount">${Number(e.amount).toFixed(2)}</div>
+            <div className="amount">₹{Number(e.amount).toFixed(2)}</div>
             <button className="remove" onClick={() => onRemove(e.id)}>
               ×
             </button>

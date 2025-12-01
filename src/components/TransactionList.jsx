@@ -28,15 +28,15 @@ export default function TransactionList({ items, onRemove, personsMap, filterPer
               <div className="meta">{t.type} · {t.person || (t.personId && personsMap && personsMap[t.personId] ? personsMap[t.personId].name : "—")} · {formatDate(t.date)}</div>
             </div>
             <div className="right">
-              <div className={`amount ${t.type === 'income' || t.type === 'lend' ? 'pos' : 'neg'}`}>
-                {t.type === 'expense' || t.type === 'borrow' ? '-' : ''}${Math.abs(Number(t.amount) || 0).toFixed(2)}
+              <div className={`amount ₹{t.type === 'income' || t.type === 'lend' ? 'pos' : 'neg'}`}>
+                {t.type === 'expense' || t.type === 'borrow' ? '-' : ''}₹{Math.abs(Number(t.amount) || 0).toFixed(2)}
               </div>
               <button
                 className="remove"
                 onClick={() => {
                   const amt = Math.abs(Number(t.amount) || 0).toFixed(2);
                   const name = t.title || (t.person || 'transaction');
-                  if (window.confirm(`Delete "${name}" — $${amt}? This action cannot be undone.`)) {
+                  if (window.confirm(`Delete "₹{name}" — ₹₹{amt}? This action cannot be undone.`)) {
                     onRemove(t.id);
                   }
                 }}

@@ -16,14 +16,14 @@ export default function PersonList({ persons, transactions, personsMap, selected
   return (
     <div>
       <h3>People</h3>
-      <div style={{marginBottom:8}}>Net across people: <strong>${net.toFixed(2)}</strong></div>
+      <div style={{marginBottom:8}}>Net across people: <strong>₹{net.toFixed(2)}</strong></div>
       <ul className="person-list">
         {list.sort((a,b)=>Math.abs(b.balance)-Math.abs(a.balance)).map((p) => (
           <li key={p.id} className="person-item">
             <div>
               <div className="person-name">{p.name}</div>
-              <div className={`person-balance ${p.balance >= 0 ? 'pos' : 'neg'}`}>
-                {p.balance >= 0 ? '+' : '-'}${Math.abs(p.balance).toFixed(2)}
+              <div className={`person-balance ₹{p.balance >= 0 ? 'pos' : 'neg'}`}>
+                {p.balance >= 0 ? '+' : '-'}₹{Math.abs(p.balance).toFixed(2)}
               </div>
             </div>
             <div>
@@ -32,7 +32,7 @@ export default function PersonList({ persons, transactions, personsMap, selected
             {selected === p.id && (
               <div className="person-transactions">
                 {(p.items || []).map((it) => (
-                  <div key={it.id} className="pt-item">{it.title} · {it.type} · ${Number(it.amount).toFixed(2)}</div>
+                  <div key={it.id} className="pt-item">{it.title} · {it.type} · ₹{Number(it.amount).toFixed(2)}</div>
                 ))}
               </div>
             )}

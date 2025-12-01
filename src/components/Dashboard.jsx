@@ -14,8 +14,8 @@ function groupBy(transactions, granularity = "monthly", limit = 12) {
     const d = new Date(t.date);
     let key;
     if (granularity === "daily") key = d.toISOString().slice(0, 10);
-    else if (granularity === "weekly") key = `${d.getFullYear()}-W${getWeekNumber(d)}`;
-    else if (granularity === "monthly") key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    else if (granularity === "weekly") key = `₹{d.getFullYear()}-W₹{getWeekNumber(d)}`;
+    else if (granularity === "monthly") key = `₹{d.getFullYear()}-₹{String(d.getMonth() + 1).padStart(2, "0")}`;
     else key = String(d.getFullYear());
 
     if (!map.has(key)) map.set(key, { income: 0, expense: 0, net: 0, key });
@@ -54,60 +54,82 @@ export default function Dashboard({ transactions, personsMap = {} }) {
   const buckets = useMemo(() => groupBy(transactions, granularity, 12), [transactions, granularity]);
 
   return (
-    <div>
-      <h3>Dashboard</h3>
-      <div className="filter-row">
-        <label>View:</label>
-        <select value={granularity} onChange={(e) => setGranularity(e.target.value)}>
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <h3>Dashboard</h3>
+        <div className="granularity-selector">
+          <select value={granularity} onChange={(e) => setGranularity(e.target.value)} className="time-select">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
       </div>
 
-      <div className="summary-row">
-        <div className="summary-card">Income: <strong>${totals.income.toFixed(2)}</strong></div>
-        <div className="summary-card">Expense: <strong>${totals.expense.toFixed(2)}</strong></div>
-        <div className="summary-card">Lent: <strong>${totals.lend.toFixed(2)}</strong></div>
-        <div className="summary-card">Borrowed: <strong>${totals.borrow.toFixed(2)}</strong></div>
+      <div className="summary-grid">
+        <div className="summary-card income-card">
+          <div className="summary-label">Income</div>
+          <div className="summary-amount">₹{totals.income.toFixed(2)}</div>
+        </div>
+        <div className="summary-card expense-card">
+          <div className="summary-label">Expense</div>
+          <div className="summary-amount">₹{totals.expense.toFixed(2)}</div>
+        </div>
+        <div className="summary-card lend-card">
+          <div className="summary-label">Lent</div>
+          <div className="summary-amount">₹{totals.lend.toFixed(2)}</div>
+        </div>
+        <div className="summary-card borrow-card">
+          <div className="summary-label">Borrowed</div>
+          <div className="summary-amount">₹{totals.borrow.toFixed(2)}</div>
+        </div>
       </div>
 
-      <div className="buckets">
-        {buckets.map((b) => (
-          <div key={b.key} className="bucket">
-            <div className="bucket-key">{b.key}</div>
-            <div className="bucket-values">Income ${b.income.toFixed(2)} · Expense ${b.expense.toFixed(2)} · Net ${b.net.toFixed(2)}</div>
-          </div>
-        ))}
+      <div className="buckets-section">
+        <h4>Period Breakdown</h4>
+        <div className="buckets">
+          {buckets.map((b) => (
+            <div key={b.key} className="bucket">
+              <div className="bucket-key">{b.key}</div>
+              <div className="bucket-values">
+                <span>💰 ₹{b.income.toFixed(2)}</span>
+                <span>💸 ₹{b.expense.toFixed(2)}</span>
+                <span className={b.net >= 0 ? 'pos' : 'neg'}>📊 ₹{b.net.toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="people-balances">
-        <h4>People Balances</h4>
+        <h4>People Overview</h4>
         {Object.keys(personsMap).length === 0 ? (
-          <div className="empty">No people tracked.</div>
+          <div className="empty">No people tracked yet.</div>
         ) : (
-          <ul className="person-list">
+          <div className="people-grid">
             {Object.values(personsMap)
               .sort((a, b) => Math.abs(b.balance) - Math.abs(a.balance))
               .map((p) => (
-                <li key={p.id} className="person-row">
-                  <div className="person-name">{p.name}</div>
-                  <div className={`person-balance ${p.balance >= 0 ? 'pos' : 'neg'}`}>
-                    {p.balance >= 0 ? '+' : '-'}${Math.abs(p.balance).toFixed(2)}
+                <div key={p.id} className="person-card">
+                  <div className="person-card-header">
+                    <div className="person-name">{p.name}</div>
+                    <div className={`person-balance ₹{p.balance >= 0 ? 'pos' : 'neg'}`}>
+                      {p.balance >= 0 ? '+' : '-'}₹{Math.abs(p.balance).toFixed(2)}
+                    </div>
                   </div>
-                  <div className="person-status">
-                    {p.balance > 0 && <span>They owe you</span>}
-                    {p.balance < 0 && <span>You owe them</span>}
-                    {p.balance === 0 && <span>Settled</span>}
+                  <div className="person-status-badge">
+                    {p.balance > 0 && <span className="badge owe">They owe you</span>}
+                    {p.balance < 0 && <span className="badge owes">You owe them</span>}
+                    {p.balance === 0 && <span className="badge settled">Settled</span>}
                   </div>
-                  <div style={{marginLeft:12}}>
-                    <button onClick={() => (window._openPerson && window._openPerson(p.id)) || null}>View Txns</button>
-                    <button style={{marginLeft:8}} onClick={() => (window._openPeopleManager && window._openPeopleManager(true)) || null}>Manage</button>
+                  <div className="person-card-actions">
+                    <button className="action-btn view-btn" onClick={() => (window._openPerson && window._openPerson(p.id)) || null}>View</button>
+                    <button className="action-btn manage-btn" onClick={() => (window._openPeopleManager && window._openPeopleManager(true)) || null}>Manage</button>
                   </div>
-                </li>
+                </div>
               ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>
